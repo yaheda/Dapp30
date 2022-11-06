@@ -30,7 +30,7 @@ contract Escrow {
     payable(payee).sendValue(address(this).balance);
   }
 
-  function balanceOf() view public returns(uint) {
+  function balanceOf() view public returns(uint256) {
     return address(this).balance;
   }
 }
