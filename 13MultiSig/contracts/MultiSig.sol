@@ -19,9 +19,9 @@ contract MultiSig {
   }
 
   mapping(uint => Transfer) public transfers;
-  uint nextId;
+  uint public nextId;
 
-  mapping(address => mapping(uint => bool)) approved;
+  mapping(address => mapping(uint => bool)) public approved;
 
   constructor(address[] memory _approvers, uint _quorum) payable {
     approvers = _approvers;
