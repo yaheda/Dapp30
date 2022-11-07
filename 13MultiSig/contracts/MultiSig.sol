@@ -18,7 +18,7 @@ contract MultiSig {
     bool sent;
   }
 
-  mapping(uint => Transfer) transfers;
+  mapping(uint => Transfer) public transfers;
   uint nextId;
 
   mapping(address => mapping(uint => bool)) approved;
@@ -33,11 +33,11 @@ contract MultiSig {
     nextId++;
   }
 
-  function Approve(uint _id, address _approver) external onlyApprover {
-    require(approved[_approver][_id] == false, 'already approved');
+  function Approve(uint _id) external onlyApprover {
+    require(approved[msg.sender][_id] == false, 'already approved');
     require(transfers[_id].sent == false, 'already sent');
 
-    approved[_approver][_id] = true;
+    approved[msg.sender][_id] = true;
     transfers[_id].approvals++;
 
     if (transfers[_id].approvals == quorum) {
