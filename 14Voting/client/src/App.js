@@ -187,7 +187,7 @@ function App() {
                   <td>
                   {isFinished(ballot) ? 'Vote finished' : (
                     ballot.hasVoted ? 'you already voted' : (
-                      <form onSubmit={e => vote(e, choice.id)}>
+                      <form onSubmit={e => vote(e, ballot.id)}>
                       <div className='form-group'>
                         <label>Choice</label>
                         <select id="choice" className='form-control'>
