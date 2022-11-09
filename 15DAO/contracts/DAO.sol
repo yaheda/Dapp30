@@ -11,8 +11,9 @@ pragma solidity 0.8.17;
  */
 
 import '@openzeppelin/contracts/utils/Address.sol';
+import '@openzeppelin/contracts/access/Ownable.sol';
 
-contract DAO {
+contract DAO is Ownable {
   using Address for address payable;
 
   mapping(address => bool) public investors;
@@ -37,8 +38,11 @@ contract DAO {
   uint public voteTime;
   uint public quorum; /// percentage
 
-  constructor(uint contributionTime) {
+  constructor(uint contributionTime, uint _voteTime, uint _quorum) {
+    require(_quorum > 0 && _quorum < 100, 'quorum must be between 0 and 100');
     contributionEnd = block.timestamp + contributionTime;
+    voteTime = _voteTime;
+    quorum = _quorum;
   }
 
   /// 1 wei = 1 share
@@ -102,6 +106,32 @@ contract DAO {
 
     votes[msg.sender][proposalId] = true;
     proposal.votes += shares[msg.sender];
+  }
+
+  function executeProposal(uint proposalId) external onlyOwner {
+    Proposal storage proposal = proposals[proposalId];
+
+    require(block.timestamp >= proposal.end, 'proposal not ended');
+    require(proposal.executed == false, 'already executed');
+    require((proposal.votes / totalShares) * 100 >= quorum, 'not enough votes');
+
+    _transferEther(proposal.amount, proposal.recipient);
+  }
+
+  function withdrawEther(uint amount, address payable to) external onlyOwner {
+    _transferEther(amount, to);
+  }
+
+  /// react when ether is sent to smart contract
+  receive () external payable {
+    availableFunds += msg.value;
+  }
+
+  function _transferEther(uint amount, address payable to) internal {
+    require(amount <= availableFunds, 'not enough funds');
+
+    availableFunds -= amount;
+    payable(to).sendValue(amount);
   }
 
   modifier onlyInvestors() {
