@@ -5,7 +5,7 @@ import '@openzeppelin/contracts/utils/Address.sol';
 
 contract StateMachine {
   using Address for address payable;
-  
+
   /**
     PENDING - Investors are funding
     ACTIVE - 
@@ -41,12 +41,28 @@ contract StateMachine {
   function fund() payable external {
     require(msg.sender == lender, 'only lender');
     require(address(this).balance == amount, 'too much eth');
+    _transitionTo(State.ACTIVE);
     payable(borrower).sendValue(amount);
   }
 
   function reimburse() payable external {
     require(msg.sender == borrower, 'only borrower');
     require(msg.value == amount + interest, 'need exact amount + interest');
+    _transitionTo(State.CLOSED);
     payable(lender).sendValue(amount + interest);
+  }
+
+  function _transitionTo(State to) internal {
+    require(to != State.PENDING, 'cannot go back to pending state');
+    require(to != state, 'cannot change to current state');
+    if (to == State.ACTIVE) {
+      require(to == State.PENDING, 'can only move to active from pending');
+      state = State.ACTIVE;
+    }
+    if (to == State.CLOSED) {
+      require(to == State.ACTIVE, 'can only move to closed from active');
+      require(block.timestamp >= end, 'loan hasnt matured yet');
+      state = State.CLOSED;
+    }
   }
 }
