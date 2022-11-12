@@ -21,6 +21,7 @@ contract StateMachine {
   uint public amount;
   uint public interest;
   uint public end;
+  uint public duration;
   address payable public borrower;
   address payable public lender;
   
@@ -33,6 +34,7 @@ contract StateMachine {
   ) {
     amount = _amount;
     interest = _interest;
+    duration = _duration;
     end = block.timestamp + _duration;
     borrower = _borrower;
     lender = _lender;
