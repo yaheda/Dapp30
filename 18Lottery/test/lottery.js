@@ -59,10 +59,15 @@ contract('Lottery', ([deployer, user1, user2]) => {
       // var user2BalanceAfter = web3.utils.toBN(await web3.eth.getBalance(user2));
 
       var balancesBefore = await balances(players);
-      var transactions = await Promise.all(players.map(player => lottery.bet({
+      var tx = await Promise.all(players.map(player => lottery.bet({
         from: player, 
-        value: web3.utils.toWei('1')
+        value: web3.utils.toWei('1'),
+        gasPrice: 1 // by setting this to 1 the gasUsed in the tx receipt will be equal to the eth used
       })));
+
+      var gas1 = web3.utils.toBN(tx[0].receipt.gasUsed);
+      var gas2 = web3.utils.toBN(tx[1].receipt.gasUsed);
+
       var balancesAfter = await balances(players);
 
       var result = players.some((player, i) => {
@@ -72,6 +77,44 @@ contract('Lottery', ([deployer, user1, user2]) => {
       var currentState = await lottery.currentState();
       assert.equal(currentState, '0');
       assert.equal(result, true);
+
+      var betWinnings = (parseInt(web3.utils.toWei('1')) * 2) * (100 - 10) / 100; 
+      var betWinningsBN = web3.utils.toBN(betWinnings);
+
+      var houseFee = (parseInt(web3.utils.toWei('1')) * 2) * (10) / 100;
+      var houseFeeBN = web3.utils.toBN(houseFee);
+
+      console.log('winnings', betWinningsBN.toString());
+      console.log('housefee', houseFeeBN.toString());
+      console.log('aaa', balancesBefore[0].eq(
+        balancesAfter[0]
+          .sub(betWinningsBN.div(web3.utils.toBN(players.length)))
+          .add(houseFeeBN.div(web3.utils.toBN(players.length)))
+          .add(gas1)
+      ));
+
+      console.log('bbb', balancesBefore[1].eq(
+        balancesAfter[1]
+          .sub(betWinningsBN.div(web3.utils.toBN(players.length)))
+          .add(houseFeeBN.div(web3.utils.toBN(players.length)))
+          .add(gas2)
+      ));
+
+      var result2 = balancesBefore[0].eq(
+        balancesAfter[0]
+            .sub(betWinningsBN.div(web3.utils.toBN(players.length)))
+            .add(houseFeeBN.div(web3.utils.toBN(players.length)))
+            .add(gas1)
+        ) ||
+        balancesBefore[1].eq(
+          balancesAfter[1]
+            .sub(betWinningsBN.div(web3.utils.toBN(players.length)))
+            .add(houseFeeBN.div(web3.utils.toBN(players.length)))
+            .add(gas2)
+        );
+
+      assert.equal(result2, true);
+
       // assert(
       //   user1BalanceAfter.gt(user1BalanceBefore) ||
       //   user2BalanceAfter.gt(user2BalanceBefore)
