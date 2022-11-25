@@ -23,6 +23,14 @@ contract Lottery is Ownable {
     houseFee = fee;
   }
 
+  function getPlayers() external view returns(address[] memory) {
+    address[] memory _players = new address[](players.length);
+    for(uint i = 0; i < players.length; i++) { 
+        _players[i] = players[i];
+    }
+    return _players;
+  }
+
   function createBet(uint nParticipants, uint price) external payable onlyOwner inState(State.IDLE) {
     requiredParticipants = nParticipants;
     requiredPrice = price;
