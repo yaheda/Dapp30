@@ -18,6 +18,7 @@ contract Fomo3d {
   uint public endDate; // end date of current timer
   uint public hardEndDate;
   uint public pot; // total amounts
+  uint public houseFee = 2;
   uint public initialKeyPrice;
   uint public totalKeys;
   address payable[] public keyHolders;
@@ -42,6 +43,52 @@ contract Fomo3d {
     endDate = block.timestamp + 30;
     hardEndDate = block.timestamp + 86400; // a day
     initialKeyPrice = 1 ether;
+  }
+
+  function bet() external payable inState(State.ACTIVE) {
+    if (block.timestamp > endDate || block.timestamp > hardEndDate) {
+      payable(msg.sender).sendValue(msg.value);
+      _distribute();
+      _createRound();
+      return;
+    }
+
+    uint keyCount = msg.value / getKeyPrice();
+    keys[msg.sender] += keyCount;
+    totalKeys += keyCount;
+
+    bool alreadyAdded = false;
+    for(uint i = 0; i < keyHolders.length; i++) {
+      if (keyHolders[i] == msg.sender) {
+        alreadyAdded = true;
+      }
+    }
+
+    if (!alreadyAdded) {
+      keyHolders.push(payable(msg.sender));
+    }
+
+    pot += msg.value;
+    endDate = endDate + 30 > hardEndDate ? hardEndDate : endDate + 30;
+    
+    king = payable(msg.sender);
+  }
+
+  function getKeyPrice() view public returns(uint) {
+    uint periodCount = (block.timestamp - startDate) / 30;
+    return initialKeyPrice + periodCount * 0.01 ether;
+  }
+
+  function _distribute() internal {
+    uint netPot = pot * (100 - houseFee) / 100;
+    payable(king).sendValue((netPot * 50) / 100);
+
+    for (uint i = 0; i < keyHolders.length; i++) {
+      address payable keyHolder = keyHolders[i];
+      if (keyHolder != king) {
+        payable(keyHolder).sendValue(((netPot * 50) / 100) * (keys[keyHolder] / totalKeys));
+      }
+    }
   }
 
   modifier inState(State state) {
