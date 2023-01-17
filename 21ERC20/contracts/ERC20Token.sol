@@ -42,4 +42,14 @@ contract ERC20Token is ERC20Interface {
         emit Transfer(msg.sender, to, value);
         return true;
     }
+
+    function transferFrom(address from, address to, uint value) public returns(bool) {
+        uint allowance = allowed[from][msg.sender];
+        require(balances[msg.sender] >= value && allowance >= value);
+        allowed[from][msg.sender] -= value;
+        balances[msg.sender] -= value;
+        balances[to] += value;
+        emit Transfer(msg.sender, to, value);
+        return true;
+    }
 }
