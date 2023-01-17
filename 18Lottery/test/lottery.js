@@ -1,7 +1,6 @@
 const Lottery = artifacts.require('Lottery.sol');
 
 const { expectRevert } = require('@openzeppelin/test-helpers');
-const { web3 } = require('@openzeppelin/test-helpers/src/setup');
 
 const balances = async (addresses) => {
   const balanceResults = await Promise.all(addresses.map(address => web3.eth.getBalance(address)));
