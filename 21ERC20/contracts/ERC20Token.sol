@@ -36,7 +36,7 @@ contract ERC20Token is ERC20Interface {
     }
 
     function transfer(address to, uint value) public returns(bool) {
-        require(balances[msg.sender] >= value);
+        require(balances[msg.sender] >= value, 'not enough tokens');
         balances[msg.sender] -= value;
         balances[to] += value;
         emit Transfer(msg.sender, to, value);
@@ -45,11 +45,26 @@ contract ERC20Token is ERC20Interface {
 
     function transferFrom(address from, address to, uint value) public returns(bool) {
         uint allowance = allowed[from][msg.sender];
-        require(balances[msg.sender] >= value && allowance >= value);
+        require(balances[msg.sender] >= value && allowance >= value, 'not enough tokens or not allowed to transfer amount');
         allowed[from][msg.sender] -= value;
         balances[msg.sender] -= value;
         balances[to] += value;
         emit Transfer(msg.sender, to, value);
         return true;
+    }
+
+    function approve(address spender, uint value) public returns(bool) {
+        require(spender != msg.sender, 'sender cannot approve itself');
+        allowed[msg.sender][spender] = value;
+        emit Approval(msg.sender, spender, value);
+        return true;
+    }
+
+    function allowance(address owner, address spender) public view returns(uint) {
+        return allowed[owner][spender];
+    }
+
+    function balanceOf(address owner) public view returns(uint) {
+        return balances[owner];
     }
 }
