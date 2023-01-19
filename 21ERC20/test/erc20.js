@@ -26,8 +26,22 @@ contract('ERC20Token', ([deployer, user1, user2, user3]) => {
       var userResult = user1BalanceBefore.eq(
         user1BalanceAfter.sub(web3.utils.toBN(100))
       )
+      var contractResult = contractBalanceBefore.eq(
+        contractBalanceAfter.add(web3.utils.toBN(100))
+      );
+
+      console.log('Before', contractBalanceBefore.toString())
+      console.log('After', contractBalanceAfter.toString())
+      console.log('Gas', gas.toString())
       
       assert.equal(userResult, true);
+      assert.equal(contractResult, true);
+
+      expectEvent(tx.receipt, 'Transfer', {
+        from: deployer,
+        to: user1,
+        tokens: web3.utils.toBN(100),
+      });
 
     })
   })
