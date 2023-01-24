@@ -45,11 +45,12 @@ contract ERC20Token is ERC20Interface {
 
     function transferFrom(address from, address to, uint value) public returns(bool) {
         uint allowance = allowed[from][msg.sender];
-        require(balances[msg.sender] >= value && allowance >= value, 'not enough tokens or not allowed to transfer amount');
+        require(allowance >= value, 'allowance too low');
+        require(balances[from] >= value, 'not enough tokens or not allowed to transfer amount');
         allowed[from][msg.sender] -= value;
-        balances[msg.sender] -= value;
+        balances[from] -= value;
         balances[to] += value;
-        emit Transfer(msg.sender, to, value);
+        emit Transfer(from, to, value);
         return true;
     }
 
