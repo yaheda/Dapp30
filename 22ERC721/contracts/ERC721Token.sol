@@ -109,12 +109,24 @@ contract ERC21Token is ERC721 {
     return idToOwner[_tokenId];
   }
 
-  function transferFrom(address _from, address _to, uint256 _tokenId) external payable {
+  function safeTransferFrom(address _from, address _to, uint _tokenId, bytes calldata data) external payable {
+    _safeTransferFrom(_from, _to, _tokenId, data);
+  }
+
+  function safeTransferFrom(address _from, address _to, uint _tokenId) external payable {
+    _safeTransferFrom(_from, _to, _tokenId, '');
+  }
+
+  function transferFrom(address _from, address _to, uint _tokenId) external payable {
     require(msg.sender == _from, 'Not authorised to transfer tokens');
     require(_from == idToOwner[_tokenId], 'Not authorised to transfer tokens');
     ownerToTokenCount[_from] -= 1;
     ownerToTokenCount[_to] -= 1;
     idToOwner[_tokenId] = _to;
     emit Transfer(_from, _to, _tokenId);
+  }
+
+  function _safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory data) {
+
   }
 }
