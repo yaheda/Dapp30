@@ -142,7 +142,7 @@ interface ERC721 /* is ERC165 */ {
     function isApprovedForAll(address _owner, address _operator) external view returns (bool);
 }
 
-contract ERC21Token is ERC721 {
+contract ERC721Token is ERC721 {
 
   using AddressUtils for address;
 
@@ -152,6 +152,21 @@ contract ERC21Token is ERC721 {
   mapping(address => mapping(address => bool)) private ownerToOperators;
 
   bytes4 internal constant MAGIC_ON_ERC721_RECEIVED = 0x150b7a02;
+
+  address public admin;
+  uint public nextTokenId;
+
+  constructor() {
+    admin = msg.sender;
+  }
+
+  function mint() external {
+    require(msg.sender == admin, 'only admin');
+    ownerToTokenCount[admin]++;
+    idToOwner[nextTokenId] = admin;
+    emit Transfer(address(0), admin, nextTokenId);
+    nextTokenId++;
+  }
 
   function balanceOf(address _owner) external view returns (uint) {
     return ownerToTokenCount[_owner];
