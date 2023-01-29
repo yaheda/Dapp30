@@ -14,19 +14,21 @@ library AddressUtils
   )
     internal
     view
-    returns (bool addressCheck)
+    returns (bool)
   {
     uint256 size;
 
-    /**
-     * XXX Currently there is no better way to check if there is a contract in an address than to
-     * check the size of the code at that address.
-     * See https://ethereum.stackexchange.com/a/14016/36603 for more details about how this works.
-     * TODO: Check this again before the Serenity release, because all addresses will be
-     * contracts then.
-     */
-    assembly { size := extcodesize(_addr) } // solhint-disable-line
-    addressCheck = size > 0;
+    // /**
+    //  * XXX Currently there is no better way to check if there is a contract in an address than to
+    //  * check the size of the code at that address.
+    //  * See https://ethereum.stackexchange.com/a/14016/36603 for more details about how this works.
+    //  * TODO: Check this again before the Serenity release, because all addresses will be
+    //  * contracts then.
+    //  */
+    // assembly { size := extcodesize(_addr) } // solhint-disable-line
+    // addressCheck = size > 0;
+
+    return _addr.code.length > 0;
   }
 
 }
@@ -211,22 +213,49 @@ contract ERC721Token is ERC721 {
   function _safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory data) internal {
     _transfer(_from, _to, _tokenId);
 
-    /// test that address is smart contract
-    if (_to.isContract()) {
-      /// call smart contract and execute predefined function
-      bytes4 returnValue = ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, data);
+    /// from openzepellin
+    _checkOnERC721Received(_from, _to, _tokenId, data);
 
-      /// compare this vallue with predifined value
-      require(returnValue == MAGIC_ON_ERC721_RECEIVED, 'recipient smart contract cannot handle ERC721 tokens');
-    }
+    // /// test that address is smart contract
+    // if (address(_to).isContract()) {
+    //   /// call smart contract and execute predefined function
+    //   bytes4 returnValue = ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, data);
+
+    //   /// compare this vallue with predifined value
+    //   require(returnValue == MAGIC_ON_ERC721_RECEIVED, 'recipient smart contract cannot handle ERC721 tokens');
+    // }
   }
 
   function _transfer(address _from, address _to, uint256 _tokenId) internal canTransfer(_tokenId) {
     ownerToTokenCount[_from] -= 1;
-    ownerToTokenCount[_to] -= 1;
+    ownerToTokenCount[_to] += 1;
     idToOwner[_tokenId] = _to;
     emit Transfer(_from, _to, _tokenId);
   }
+
+  function _checkOnERC721Received(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) private returns (bool) {
+        if (to.isContract()) {
+            try ERC721TokenReceiver(to).onERC721Received(msg.sender, from, tokenId, data) returns (bytes4 retval) {
+                return retval == ERC721TokenReceiver.onERC721Received.selector;
+            } catch (bytes memory reason) {
+                if (reason.length == 0) {
+                    revert("ERC721: transfer to non ERC721Receiver implementer");
+                } else {
+                    /// @solidity memory-safe-assembly
+                    assembly {
+                        revert(add(32, reason), mload(reason))
+                    }
+                }
+            }
+        } else {
+            return true;
+        }
+    }
 
   modifier canTransfer(uint _tokenId) {
     address owner = idToOwner[_tokenId];

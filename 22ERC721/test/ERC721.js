@@ -1,4 +1,5 @@
 const ERC721Token = artifacts.require('ERC721Token.sol');
+const MockBadContract = artifacts.require('MockBadContract.sol');
 
 const { expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 
@@ -19,7 +20,7 @@ contract('ERC721Token', ([deployer, user1, user2, user3]) => {
     );
   });
 
-  it.only('should mint if admin', async () => {
+  it('should mint if admin', async () => {
     var tx = await erc721Token.mint();
     var nextTokenId = await erc721Token.nextTokenId();
     var balance = await erc721Token.balanceOf(deployer);
@@ -41,24 +42,76 @@ contract('ERC721Token', ([deployer, user1, user2, user3]) => {
       erc721Token.transferFrom(user1, user2, 0, {from: user1}),
       'Transfer not authorised'
     );
+    await expectRevert(
+      erc721Token.safeTransferFrom(user1, user2, 0, {from: user1}),
+      'Transfer not authorised'
+    );
   });
 
   it('should NOT transfer if not owner', async () => {
+    await expectRevert(
+      erc721Token.transferFrom(user1, user2, 0, {from: user1}),
+      'Transfer not authorised'
+    );
+    await expectRevert(
+      erc721Token.safeTransferFrom(user1, user2, 0, {from: user1}),
+      'Transfer not authorised'
+    );
   });
 
   //Bug here, skip this test :( see end code for explanation
-  it.skip(
+  it(
     'safeTransferFrom() should NOT transfer if recipient contract does not implement erc721recipient interface', 
     async () => {
+    
+      var badContract = await MockBadContract.new();
+      await expectRevert(
+        erc721Token.safeTransferFrom(deployer, badContract.address, 0, { from: deployer}),
+        'ERC721: transfer to non ERC721Receiver implementer'
+      );
   });
 
   it('transferFrom() should transfer', async () => {
+    var tokenId = 0;
+
+    var tx = await erc721Token.transferFrom(deployer, user1, tokenId);
+    var [balanceDeployer, balanceUser1, owner] = await Promise.all([
+      erc721Token.balanceOf(deployer),
+      erc721Token.balanceOf(user1),
+      erc721Token.ownerOf(tokenId)
+    ]);
+
+    assert.equal(balanceDeployer, '2');
+    assert.equal(balanceUser1, '1');
+    assert.equal(owner, user1)
+
+    await expectEvent(tx.receipt, 'Transfer', {
+      _from: deployer,
+      _to: user1,
+      _tokenId: web3.utils.toBN(tokenId),
+    });
   });
 
   it('safeTransferFrom() should transfer', async () => {
   });
 
-  it('should transfer token when approved', async () => {
+  it.only('should transfer token when approved', async () => {
+    var tokenId = 0;
+    var tx1 = await erc721Token.approve(user3, tokenId);
+    var tx2 = await erc721Token.transferFrom(deployer, user1, tokenId, { from: user3 });
+
+    await expectEvent(tx1.receipt, 'Approval', {
+      _owner: deployer,
+      _approved: user3,
+      _tokenId: web3.utils.toBN(tokenId),
+    });
+
+    await expectEvent(tx2.receipt, 'Transfer', {
+      _from: deployer,
+      _to: user1,
+      _tokenId: web3.utils.toBN(tokenId),
+    });
+
   });
 
 
