@@ -28,6 +28,10 @@ library AddressUtils
     // assembly { size := extcodesize(_addr) } // solhint-disable-line
     // addressCheck = size > 0;
 
+
+    // This method relies on extcodesize/address.code.length, which returns 0
+    // for contracts in construction, since the code is only stored at the end
+    // of the constructor execution.
     return _addr.code.length > 0;
   }
 
@@ -214,7 +218,8 @@ contract ERC721Token is ERC721 {
     _transfer(_from, _to, _tokenId);
 
     /// from openzepellin
-    _checkOnERC721Received(_from, _to, _tokenId, data);
+    bool returnValue = _checkOnERC721Received(_from, _to, _tokenId, data);
+    require(returnValue == true, 'recipient smart contract cannot handle ERC721 tokens');
 
     // /// test that address is smart contract
     // if (address(_to).isContract()) {

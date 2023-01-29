@@ -1,5 +1,6 @@
 const ERC721Token = artifacts.require('ERC721Token.sol');
 const MockBadContract = artifacts.require('MockBadContract.sol');
+const MockGoodContract = artifacts.require('MockGoodContract.sol');
 
 const { expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 
@@ -92,10 +93,17 @@ contract('ERC721Token', ([deployer, user1, user2, user3]) => {
     });
   });
 
-  it('safeTransferFrom() should transfer', async () => {
+  it.only('safeTransferFrom() should transfer', async () => {
+    var goodContract = await MockGoodContract.new();
+    var tx = await erc721Token.safeTransferFrom(deployer, goodContract.address, 0, { from: deployer});
+    await expectEvent(tx.receipt, 'Transfer', {
+      _from: deployer,
+      _to: goodContract.address,
+      _tokenId: web3.utils.toBN(0),
+    });
   });
 
-  it.only('should transfer token when approved', async () => {
+  it('should transfer token when approved', async () => {
     var tokenId = 0;
     var tx1 = await erc721Token.approve(user3, tokenId);
     var tx2 = await erc721Token.transferFrom(deployer, user1, tokenId, { from: user3 });
