@@ -1,6 +1,52 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
+library AddressUtils
+{
+
+  /**
+   * @dev Returns whether the target address is a contract.
+   * @param _addr Address to check.
+   * @return addressCheck if _addr is a contract, false if not.
+   */
+  function isContract(
+    address _addr
+  )
+    internal
+    view
+    returns (bool addressCheck)
+  {
+    uint256 size;
+
+    /**
+     * XXX Currently there is no better way to check if there is a contract in an address than to
+     * check the size of the code at that address.
+     * See https://ethereum.stackexchange.com/a/14016/36603 for more details about how this works.
+     * TODO: Check this again before the Serenity release, because all addresses will be
+     * contracts then.
+     */
+    assembly { size := extcodesize(_addr) } // solhint-disable-line
+    addressCheck = size > 0;
+  }
+
+}
+
+interface ERC721TokenReceiver {
+    /// @notice Handle the receipt of an NFT
+    /// @dev The ERC721 smart contract calls this function on the recipient
+    ///  after a `transfer`. This function MAY throw to revert and reject the
+    ///  transfer. Return of other than the magic value MUST result in the
+    ///  transaction being reverted.
+    ///  Note: the contract address is always the message sender.
+    /// @param _operator The address which called `safeTransferFrom` function
+    /// @param _from The address which previously owned the token
+    /// @param _tokenId The NFT identifier which is being transferred
+    /// @param _data Additional data with no specified format
+    /// @return `bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"))`
+    ///  unless throwing
+    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data) external returns(bytes4);
+}
+
 interface ERC721 /* is ERC165 */ {
     /// @dev This emits when ownership of any NFT changes by any mechanism.
     ///  This event emits when NFTs are created (`from` == 0) and destroyed
@@ -98,8 +144,14 @@ interface ERC721 /* is ERC165 */ {
 
 contract ERC21Token is ERC721 {
 
+  using AddressUtils for address;
+
   mapping(address => uint) private ownerToTokenCount;
   mapping(uint => address) private idToOwner;
+  mapping(uint => address) private idToApproved;
+  mapping(address => mapping(address => bool)) private ownerToOperators;
+
+  bytes4 internal constant MAGIC_ON_ERC721_RECEIVED = 0x150b7a02;
 
   function balanceOf(address _owner) external view returns (uint) {
     return ownerToTokenCount[_owner];
@@ -118,15 +170,55 @@ contract ERC21Token is ERC721 {
   }
 
   function transferFrom(address _from, address _to, uint _tokenId) external payable {
-    require(msg.sender == _from, 'Not authorised to transfer tokens');
-    require(_from == idToOwner[_tokenId], 'Not authorised to transfer tokens');
+    _transfer(_from, _to, _tokenId);
+  }
+
+  function approve(address _approved, uint _tokenId) external payable {
+    address owner = idToOwner[_tokenId];
+    require(msg.sender == owner, 'Not authorised');
+    idToApproved[_tokenId] = _approved;
+    emit Approval(owner, _approved, _tokenId);
+  }
+
+  function setApprovalForAll(address _operator, bool _approved) external {
+    ownerToOperators[msg.sender][_operator] = _approved;
+    emit ApprovalForAll(msg.sender, _operator, _approved);
+  }
+
+  function getApproved(uint256 _tokenId) external view returns (address) {
+    return idToApproved[_tokenId];
+  }
+
+  function isApprovedForAll(address _owner, address _operator) external view returns (bool) {
+    return ownerToOperators[_owner][_operator];
+  }
+
+  function _safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory data) internal {
+    _transfer(_from, _to, _tokenId);
+
+    /// test that address is smart contract
+    if (_to.isContract()) {
+      /// call smart contract and execute predefined function
+      bytes4 returnValue = ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, data);
+
+      /// compare this vallue with predifined value
+      require(returnValue == MAGIC_ON_ERC721_RECEIVED, 'recipient smart contract cannot handle ERC721 tokens');
+    }
+  }
+
+  function _transfer(address _from, address _to, uint256 _tokenId) internal canTransfer(_tokenId) {
     ownerToTokenCount[_from] -= 1;
     ownerToTokenCount[_to] -= 1;
     idToOwner[_tokenId] = _to;
     emit Transfer(_from, _to, _tokenId);
   }
 
-  function _safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory data) {
-
+  modifier canTransfer(uint _tokenId) {
+    address owner = idToOwner[_tokenId];
+    require(msg.sender == owner 
+      || msg.sender == idToApproved[_tokenId]
+      || ownerToOperators[owner][msg.sender] == true, 'Transfer not authorised');
+    _;
   }
+
 }
