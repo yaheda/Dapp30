@@ -181,19 +181,26 @@ contract ERC721Token is ERC721 {
     return string(abi.encodePacked(tokenURIBase, '/', _tokenId));
   }
 
-  function mint() external {
-    require(msg.sender == admin, 'only admin');
-    ownerToTokenCount[admin]++;
-    idToOwner[nextTokenId] = admin;
-    emit Transfer(address(0), admin, nextTokenId);
-    nextTokenId++;
+  // function mint() external {
+  //   require(msg.sender == admin, 'only admin');
+  //   ownerToTokenCount[admin]++;
+  //   idToOwner[nextTokenId] = admin;
+  //   emit Transfer(address(0), admin, nextTokenId);
+  //   nextTokenId++;
+  // }
+
+  function _mint(uint _tokenId, address owner) internal {
+    require(idToOwner[_tokenId] == address(0), 'this token already exist');
+    idToOwner[_tokenId] = owner;
+    ownerToTokenCount[owner] += 1;
+    emit Transfer(address(0), owner, _tokenId);
   }
 
   function balanceOf(address _owner) external view returns (uint) {
     return ownerToTokenCount[_owner];
   }
 
-  function ownerOf(uint256 _tokenId) external view returns (address) {
+  function ownerOf(uint256 _tokenId) public view returns (address) {
     return idToOwner[_tokenId];
   }
 
