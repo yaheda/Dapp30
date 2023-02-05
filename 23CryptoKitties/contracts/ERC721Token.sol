@@ -163,7 +163,7 @@ contract ERC721Token is ERC721 {
   string public symbol;
   string public tokenURIBase;
 
-  address public admin;
+  //address public admin;
   uint public nextTokenId;
 
   constructor(
@@ -171,7 +171,7 @@ contract ERC721Token is ERC721 {
     string memory _symbol,
     string memory _tokenURIBase
   ) {
-    admin = msg.sender;
+    //admin = msg.sender;
     name = _name;
     symbol = _symbol;
     tokenURIBase = _tokenURIBase;

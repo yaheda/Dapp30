@@ -14,7 +14,7 @@ contract CryptoKitty is ERC721Token {
     uint geneB;
   }
 
-  mapping (uint => Kitty) private kitties;
+  mapping (uint => Kitty) public kitties;
   uint public nextId;
 
   address public admin;
@@ -42,7 +42,7 @@ contract CryptoKitty is ERC721Token {
     uint maxGen = kitty1.generation > kitty2.generation ? kitty1.generation : kitty2.generation;
     uint geneA = _random(4) > 1 ? kitty1.geneA : kitty2.geneA;
     uint geneB = _random(4) > 1 ? kitty1.geneB : kitty2.geneB;
-    kitties[nextId] = Kitty(nextId, maxGen, geneA, geneB);
+    kitties[nextId] = Kitty(nextId, maxGen + 1, geneA, geneB);
     _mint(nextId, msg.sender);
     nextId++;
   }
