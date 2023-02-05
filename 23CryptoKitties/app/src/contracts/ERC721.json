@@ -1,14 +1,281 @@
 {
-  "contractName": "AddressUtils",
-  "abi": [],
-  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ERC721Token.sol\":\"AddressUtils\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ERC721Token.sol\":{\"keccak256\":\"0xdc179231fd0f79a4367480d064bd4a29bb825d6669d3eef454cae8044149ae06\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d93a594e63f171db2da717ea3fced42b5b2be9e1411529e605e510f67ba0e57f\",\"dweb:/ipfs/QmTbVe9Foz6FpDjvumECtHtxKBrorofFXXzQcr6LFiUP1S\"]}},\"version\":1}",
-  "bytecode": "0x60566050600b82828239805160001a6073146043577f4e487b7100000000000000000000000000000000000000000000000000000000600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220ff32abf51f4c2d806136d31917a7ab4b4dcd370642a8fefe675512240d76d9f364736f6c63430008110033",
-  "deployedBytecode": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220ff32abf51f4c2d806136d31917a7ab4b4dcd370642a8fefe675512240d76d9f364736f6c63430008110033",
+  "contractName": "ERC721",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_approved",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "Approval",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_operator",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "_approved",
+          "type": "bool"
+        }
+      ],
+      "name": "ApprovalForAll",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "ownerOf",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "data",
+          "type": "bytes"
+        }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_approved",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_operator",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "_approved",
+          "type": "bool"
+        }
+      ],
+      "name": "setApprovalForAll",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_tokenId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getApproved",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_operator",
+          "type": "address"
+        }
+      ],
+      "name": "isApprovedForAll",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.17+commit.8df45f5f\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_approved\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_operator\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"_approved\",\"type\":\"bool\"}],\"name\":\"ApprovalForAll\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_approved\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"getApproved\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_operator\",\"type\":\"address\"}],\"name\":\"isApprovedForAll\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"ownerOf\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"},{\"internalType\":\"bytes\",\"name\":\"data\",\"type\":\"bytes\"}],\"name\":\"safeTransferFrom\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_operator\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"_approved\",\"type\":\"bool\"}],\"name\":\"setApprovalForAll\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_from\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_to\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"_tokenId\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[],\"stateMutability\":\"payable\",\"type\":\"function\"}],\"devdoc\":{\"events\":{\"Approval(address,address,uint256)\":{\"details\":\"This emits when the approved address for an NFT is changed or  reaffirmed. The zero address indicates there is no approved address.  When a Transfer event emits, this also indicates that the approved  address for that NFT (if any) is reset to none.\"},\"ApprovalForAll(address,address,bool)\":{\"details\":\"This emits when an operator is enabled or disabled for an owner.  The operator can manage all NFTs of the owner.\"},\"Transfer(address,address,uint256)\":{\"details\":\"This emits when ownership of any NFT changes by any mechanism.  This event emits when NFTs are created (`from` == 0) and destroyed  (`to` == 0). Exception: during contract creation, any number of NFTs  may be created and assigned without emitting Transfer. At the time of  any transfer, the approved address for that NFT (if any) is reset to none.\"}},\"kind\":\"dev\",\"methods\":{\"approve(address,uint256)\":{\"details\":\"The zero address indicates there is no approved address.  Throws unless `msg.sender` is the current NFT owner, or an authorized  operator of the current owner.\",\"params\":{\"_approved\":\"The new approved NFT controller\",\"_tokenId\":\"The NFT to approve\"}},\"balanceOf(address)\":{\"details\":\"NFTs assigned to the zero address are considered invalid, and this  function throws for queries about the zero address.\",\"params\":{\"_owner\":\"An address for whom to query the balance\"},\"returns\":{\"_0\":\"The number of NFTs owned by `_owner`, possibly zero\"}},\"getApproved(uint256)\":{\"details\":\"Throws if `_tokenId` is not a valid NFT.\",\"params\":{\"_tokenId\":\"The NFT to find the approved address for\"},\"returns\":{\"_0\":\"The approved address for this NFT, or the zero address if there is none\"}},\"isApprovedForAll(address,address)\":{\"params\":{\"_operator\":\"The address that acts on behalf of the owner\",\"_owner\":\"The address that owns the NFTs\"},\"returns\":{\"_0\":\"True if `_operator` is an approved operator for `_owner`, false otherwise\"}},\"ownerOf(uint256)\":{\"details\":\"NFTs assigned to zero address are considered invalid, and queries  about them do throw.\",\"params\":{\"_tokenId\":\"The identifier for an NFT\"},\"returns\":{\"_0\":\"The address of the owner of the NFT\"}},\"safeTransferFrom(address,address,uint256)\":{\"details\":\"This works identically to the other function with an extra data parameter,  except this function just sets data to \\\"\\\".\",\"params\":{\"_from\":\"The current owner of the NFT\",\"_to\":\"The new owner\",\"_tokenId\":\"The NFT to transfer\"}},\"safeTransferFrom(address,address,uint256,bytes)\":{\"details\":\"Throws unless `msg.sender` is the current owner, an authorized  operator, or the approved address for this NFT. Throws if `_from` is  not the current owner. Throws if `_to` is the zero address. Throws if  `_tokenId` is not a valid NFT. When transfer is complete, this function  checks if `_to` is a smart contract (code size > 0). If so, it calls  `onERC721Received` on `_to` and throws if the return value is not  `bytes4(keccak256(\\\"onERC721Received(address,address,uint256,bytes)\\\"))`.\",\"params\":{\"_from\":\"The current owner of the NFT\",\"_to\":\"The new owner\",\"_tokenId\":\"The NFT to transfer\",\"data\":\"Additional data with no specified format, sent in call to `_to`\"}},\"setApprovalForAll(address,bool)\":{\"details\":\"Emits the ApprovalForAll event. The contract MUST allow  multiple operators per owner.\",\"params\":{\"_approved\":\"True if the operator is approved, false to revoke approval\",\"_operator\":\"Address to add to the set of authorized operators\"}},\"transferFrom(address,address,uint256)\":{\"details\":\"Throws unless `msg.sender` is the current owner, an authorized  operator, or the approved address for this NFT. Throws if `_from` is  not the current owner. Throws if `_to` is the zero address. Throws if  `_tokenId` is not a valid NFT.\",\"params\":{\"_from\":\"The current owner of the NFT\",\"_to\":\"The new owner\",\"_tokenId\":\"The NFT to transfer\"}}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"approve(address,uint256)\":{\"notice\":\"Change or reaffirm the approved address for an NFT\"},\"balanceOf(address)\":{\"notice\":\"Count all NFTs assigned to an owner\"},\"getApproved(uint256)\":{\"notice\":\"Get the approved address for a single NFT\"},\"isApprovedForAll(address,address)\":{\"notice\":\"Query if an address is an authorized operator for another address\"},\"ownerOf(uint256)\":{\"notice\":\"Find the owner of an NFT\"},\"safeTransferFrom(address,address,uint256)\":{\"notice\":\"Transfers the ownership of an NFT from one address to another address\"},\"safeTransferFrom(address,address,uint256,bytes)\":{\"notice\":\"Transfers the ownership of an NFT from one address to another address\"},\"setApprovalForAll(address,bool)\":{\"notice\":\"Enable or disable approval for a third party (\\\"operator\\\") to manage  all of `msg.sender`'s assets\"},\"transferFrom(address,address,uint256)\":{\"notice\":\"Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE  TO CONFIRM THAT `_to` IS CAPABLE OF RECEIVING NFTS OR ELSE  THEY MAY BE PERMANENTLY LOST\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/ERC721Token.sol\":\"ERC721\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/ERC721Token.sol\":{\"keccak256\":\"0xdc179231fd0f79a4367480d064bd4a29bb825d6669d3eef454cae8044149ae06\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d93a594e63f171db2da717ea3fced42b5b2be9e1411529e605e510f67ba0e57f\",\"dweb:/ipfs/QmTbVe9Foz6FpDjvumECtHtxKBrorofFXXzQcr6LFiUP1S\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
   "immutableReferences": {},
   "generatedSources": [],
   "deployedGeneratedSources": [],
-  "sourceMap": "60:1075:1:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;",
-  "deployedSourceMap": "60:1075:1:-:0;;;;;;;;",
+  "sourceMap": "",
+  "deployedSourceMap": "",
   "source": "// SPDX-License-Identifier: MIT\r\npragma solidity 0.8.17;\r\n\r\nlibrary AddressUtils\r\n{\r\n\r\n  /**\r\n   * @dev Returns whether the target address is a contract.\r\n   * @param _addr Address to check.\r\n   * @return addressCheck if _addr is a contract, false if not.\r\n   */\r\n  function isContract(\r\n    address _addr\r\n  )\r\n    internal\r\n    view\r\n    returns (bool)\r\n  {\r\n    uint256 size;\r\n\r\n    // /**\r\n    //  * XXX Currently there is no better way to check if there is a contract in an address than to\r\n    //  * check the size of the code at that address.\r\n    //  * See https://ethereum.stackexchange.com/a/14016/36603 for more details about how this works.\r\n    //  * TODO: Check this again before the Serenity release, because all addresses will be\r\n    //  * contracts then.\r\n    //  */\r\n    // assembly { size := extcodesize(_addr) } // solhint-disable-line\r\n    // addressCheck = size > 0;\r\n\r\n\r\n    // This method relies on extcodesize/address.code.length, which returns 0\r\n    // for contracts in construction, since the code is only stored at the end\r\n    // of the constructor execution.\r\n    return _addr.code.length > 0;\r\n  }\r\n\r\n}\r\n\r\ninterface ERC721TokenReceiver {\r\n    /// @notice Handle the receipt of an NFT\r\n    /// @dev The ERC721 smart contract calls this function on the recipient\r\n    ///  after a `transfer`. This function MAY throw to revert and reject the\r\n    ///  transfer. Return of other than the magic value MUST result in the\r\n    ///  transaction being reverted.\r\n    ///  Note: the contract address is always the message sender.\r\n    /// @param _operator The address which called `safeTransferFrom` function\r\n    /// @param _from The address which previously owned the token\r\n    /// @param _tokenId The NFT identifier which is being transferred\r\n    /// @param _data Additional data with no specified format\r\n    /// @return `bytes4(keccak256(\"onERC721Received(address,address,uint256,bytes)\"))`\r\n    ///  unless throwing\r\n    function onERC721Received(address _operator, address _from, uint256 _tokenId, bytes calldata _data) external returns(bytes4);\r\n}\r\n\r\ninterface ERC721 /* is ERC165 */ {\r\n    /// @dev This emits when ownership of any NFT changes by any mechanism.\r\n    ///  This event emits when NFTs are created (`from` == 0) and destroyed\r\n    ///  (`to` == 0). Exception: during contract creation, any number of NFTs\r\n    ///  may be created and assigned without emitting Transfer. At the time of\r\n    ///  any transfer, the approved address for that NFT (if any) is reset to none.\r\n    event Transfer(address indexed _from, address indexed _to, uint256 indexed _tokenId);\r\n\r\n    /// @dev This emits when the approved address for an NFT is changed or\r\n    ///  reaffirmed. The zero address indicates there is no approved address.\r\n    ///  When a Transfer event emits, this also indicates that the approved\r\n    ///  address for that NFT (if any) is reset to none.\r\n    event Approval(address indexed _owner, address indexed _approved, uint256 indexed _tokenId);\r\n\r\n    /// @dev This emits when an operator is enabled or disabled for an owner.\r\n    ///  The operator can manage all NFTs of the owner.\r\n    event ApprovalForAll(address indexed _owner, address indexed _operator, bool _approved);\r\n\r\n    /// @notice Count all NFTs assigned to an owner\r\n    /// @dev NFTs assigned to the zero address are considered invalid, and this\r\n    ///  function throws for queries about the zero address.\r\n    /// @param _owner An address for whom to query the balance\r\n    /// @return The number of NFTs owned by `_owner`, possibly zero\r\n    function balanceOf(address _owner) external view returns (uint256);\r\n\r\n    /// @notice Find the owner of an NFT\r\n    /// @dev NFTs assigned to zero address are considered invalid, and queries\r\n    ///  about them do throw.\r\n    /// @param _tokenId The identifier for an NFT\r\n    /// @return The address of the owner of the NFT\r\n    function ownerOf(uint256 _tokenId) external view returns (address);\r\n\r\n    /// @notice Transfers the ownership of an NFT from one address to another address\r\n    /// @dev Throws unless `msg.sender` is the current owner, an authorized\r\n    ///  operator, or the approved address for this NFT. Throws if `_from` is\r\n    ///  not the current owner. Throws if `_to` is the zero address. Throws if\r\n    ///  `_tokenId` is not a valid NFT. When transfer is complete, this function\r\n    ///  checks if `_to` is a smart contract (code size > 0). If so, it calls\r\n    ///  `onERC721Received` on `_to` and throws if the return value is not\r\n    ///  `bytes4(keccak256(\"onERC721Received(address,address,uint256,bytes)\"))`.\r\n    /// @param _from The current owner of the NFT\r\n    /// @param _to The new owner\r\n    /// @param _tokenId The NFT to transfer\r\n    /// @param data Additional data with no specified format, sent in call to `_to`\r\n    function safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes calldata data) external payable;\r\n\r\n    /// @notice Transfers the ownership of an NFT from one address to another address\r\n    /// @dev This works identically to the other function with an extra data parameter,\r\n    ///  except this function just sets data to \"\".\r\n    /// @param _from The current owner of the NFT\r\n    /// @param _to The new owner\r\n    /// @param _tokenId The NFT to transfer\r\n    function safeTransferFrom(address _from, address _to, uint256 _tokenId) external payable;\r\n\r\n    /// @notice Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE\r\n    ///  TO CONFIRM THAT `_to` IS CAPABLE OF RECEIVING NFTS OR ELSE\r\n    ///  THEY MAY BE PERMANENTLY LOST\r\n    /// @dev Throws unless `msg.sender` is the current owner, an authorized\r\n    ///  operator, or the approved address for this NFT. Throws if `_from` is\r\n    ///  not the current owner. Throws if `_to` is the zero address. Throws if\r\n    ///  `_tokenId` is not a valid NFT.\r\n    /// @param _from The current owner of the NFT\r\n    /// @param _to The new owner\r\n    /// @param _tokenId The NFT to transfer\r\n    function transferFrom(address _from, address _to, uint256 _tokenId) external payable;\r\n\r\n    /// @notice Change or reaffirm the approved address for an NFT\r\n    /// @dev The zero address indicates there is no approved address.\r\n    ///  Throws unless `msg.sender` is the current NFT owner, or an authorized\r\n    ///  operator of the current owner.\r\n    /// @param _approved The new approved NFT controller\r\n    /// @param _tokenId The NFT to approve\r\n    function approve(address _approved, uint256 _tokenId) external payable;\r\n\r\n    /// @notice Enable or disable approval for a third party (\"operator\") to manage\r\n    ///  all of `msg.sender`'s assets\r\n    /// @dev Emits the ApprovalForAll event. The contract MUST allow\r\n    ///  multiple operators per owner.\r\n    /// @param _operator Address to add to the set of authorized operators\r\n    /// @param _approved True if the operator is approved, false to revoke approval\r\n    function setApprovalForAll(address _operator, bool _approved) external;\r\n\r\n    /// @notice Get the approved address for a single NFT\r\n    /// @dev Throws if `_tokenId` is not a valid NFT.\r\n    /// @param _tokenId The NFT to find the approved address for\r\n    /// @return The approved address for this NFT, or the zero address if there is none\r\n    function getApproved(uint256 _tokenId) external view returns (address);\r\n\r\n    /// @notice Query if an address is an authorized operator for another address\r\n    /// @param _owner The address that owns the NFTs\r\n    /// @param _operator The address that acts on behalf of the owner\r\n    /// @return True if `_operator` is an approved operator for `_owner`, false otherwise\r\n    function isApprovedForAll(address _owner, address _operator) external view returns (bool);\r\n}\r\n\r\ncontract ERC721Token is ERC721 {\r\n\r\n  using AddressUtils for address;\r\n\r\n  mapping(address => uint) private ownerToTokenCount;\r\n  mapping(uint => address) private idToOwner;\r\n  mapping(uint => address) private idToApproved;\r\n  mapping(address => mapping(address => bool)) private ownerToOperators;\r\n\r\n  bytes4 internal constant MAGIC_ON_ERC721_RECEIVED = 0x150b7a02;\r\n\r\n  string public name;\r\n  string public symbol;\r\n  string public tokenURIBase;\r\n\r\n  //address public admin;\r\n  uint public nextTokenId;\r\n\r\n  constructor(\r\n    string memory _name,\r\n    string memory _symbol,\r\n    string memory _tokenURIBase\r\n  ) {\r\n    //admin = msg.sender;\r\n    name = _name;\r\n    symbol = _symbol;\r\n    tokenURIBase = _tokenURIBase;\r\n  }\r\n\r\n  function tokenURI(uint _tokenId) external view returns(string memory) {\r\n    return string(abi.encodePacked(tokenURIBase, '/', _tokenId));\r\n  }\r\n\r\n  // function mint() external {\r\n  //   require(msg.sender == admin, 'only admin');\r\n  //   ownerToTokenCount[admin]++;\r\n  //   idToOwner[nextTokenId] = admin;\r\n  //   emit Transfer(address(0), admin, nextTokenId);\r\n  //   nextTokenId++;\r\n  // }\r\n\r\n  function _mint(uint _tokenId, address owner) internal {\r\n    require(idToOwner[_tokenId] == address(0), 'this token already exist');\r\n    idToOwner[_tokenId] = owner;\r\n    ownerToTokenCount[owner] += 1;\r\n    emit Transfer(address(0), owner, _tokenId);\r\n  }\r\n\r\n  function balanceOf(address _owner) external view returns (uint) {\r\n    return ownerToTokenCount[_owner];\r\n  }\r\n\r\n  function ownerOf(uint256 _tokenId) public view returns (address) {\r\n    return idToOwner[_tokenId];\r\n  }\r\n\r\n  function safeTransferFrom(address _from, address _to, uint _tokenId, bytes calldata data) external payable {\r\n    _safeTransferFrom(_from, _to, _tokenId, data);\r\n  }\r\n\r\n  function safeTransferFrom(address _from, address _to, uint _tokenId) external payable {\r\n    _safeTransferFrom(_from, _to, _tokenId, '');\r\n  }\r\n\r\n  function transferFrom(address _from, address _to, uint _tokenId) external payable {\r\n    _transfer(_from, _to, _tokenId);\r\n  }\r\n\r\n  function approve(address _approved, uint _tokenId) external payable {\r\n    address owner = idToOwner[_tokenId];\r\n    require(msg.sender == owner, 'Not authorised');\r\n    idToApproved[_tokenId] = _approved;\r\n    emit Approval(owner, _approved, _tokenId);\r\n  }\r\n\r\n  function setApprovalForAll(address _operator, bool _approved) external {\r\n    ownerToOperators[msg.sender][_operator] = _approved;\r\n    emit ApprovalForAll(msg.sender, _operator, _approved);\r\n  }\r\n\r\n  function getApproved(uint256 _tokenId) external view returns (address) {\r\n    return idToApproved[_tokenId];\r\n  }\r\n\r\n  function isApprovedForAll(address _owner, address _operator) external view returns (bool) {\r\n    return ownerToOperators[_owner][_operator];\r\n  }\r\n\r\n  function _safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes memory data) internal {\r\n    _transfer(_from, _to, _tokenId);\r\n\r\n    /// from openzepellin\r\n    bool returnValue = _checkOnERC721Received(_from, _to, _tokenId, data);\r\n    require(returnValue == true, 'recipient smart contract cannot handle ERC721 tokens');\r\n\r\n    // /// test that address is smart contract\r\n    // if (address(_to).isContract()) {\r\n    //   /// call smart contract and execute predefined function\r\n    //   bytes4 returnValue = ERC721TokenReceiver(_to).onERC721Received(msg.sender, _from, _tokenId, data);\r\n\r\n    //   /// compare this vallue with predifined value\r\n    //   require(returnValue == MAGIC_ON_ERC721_RECEIVED, 'recipient smart contract cannot handle ERC721 tokens');\r\n    // }\r\n  }\r\n\r\n  function _transfer(address _from, address _to, uint256 _tokenId) internal canTransfer(_tokenId) {\r\n    ownerToTokenCount[_from] -= 1;\r\n    ownerToTokenCount[_to] += 1;\r\n    idToOwner[_tokenId] = _to;\r\n    emit Transfer(_from, _to, _tokenId);\r\n  }\r\n\r\n  function _checkOnERC721Received(\r\n        address from,\r\n        address to,\r\n        uint256 tokenId,\r\n        bytes memory data\r\n    ) private returns (bool) {\r\n        if (to.isContract()) {\r\n            try ERC721TokenReceiver(to).onERC721Received(msg.sender, from, tokenId, data) returns (bytes4 retval) {\r\n                return retval == ERC721TokenReceiver.onERC721Received.selector;\r\n            } catch (bytes memory reason) {\r\n                if (reason.length == 0) {\r\n                    revert(\"ERC721: transfer to non ERC721Receiver implementer\");\r\n                } else {\r\n                    /// @solidity memory-safe-assembly\r\n                    assembly {\r\n                        revert(add(32, reason), mload(reason))\r\n                    }\r\n                }\r\n            }\r\n        } else {\r\n            return true;\r\n        }\r\n    }\r\n\r\n  modifier canTransfer(uint _tokenId) {\r\n    address owner = idToOwner[_tokenId];\r\n    require(msg.sender == owner \r\n      || msg.sender == idToApproved[_tokenId]\r\n      || ownerToOperators[owner][msg.sender] == true, 'Transfer not authorised');\r\n    _;\r\n  }\r\n\r\n}",
   "sourcePath": "C:\\Development\\Products\\Blockchain\\Dapp30\\Dapp30\\23CryptoKitties\\contracts\\ERC721Token.sol",
   "ast": {
@@ -7482,15 +7749,130 @@
   },
   "networks": {},
   "schemaVersion": "3.4.10",
-  "updatedAt": "2023-02-05T20:43:04.369Z",
+  "updatedAt": "2023-02-05T20:58:55.609Z",
   "devdoc": {
+    "events": {
+      "Approval(address,address,uint256)": {
+        "details": "This emits when the approved address for an NFT is changed or  reaffirmed. The zero address indicates there is no approved address.  When a Transfer event emits, this also indicates that the approved  address for that NFT (if any) is reset to none."
+      },
+      "ApprovalForAll(address,address,bool)": {
+        "details": "This emits when an operator is enabled or disabled for an owner.  The operator can manage all NFTs of the owner."
+      },
+      "Transfer(address,address,uint256)": {
+        "details": "This emits when ownership of any NFT changes by any mechanism.  This event emits when NFTs are created (`from` == 0) and destroyed  (`to` == 0). Exception: during contract creation, any number of NFTs  may be created and assigned without emitting Transfer. At the time of  any transfer, the approved address for that NFT (if any) is reset to none."
+      }
+    },
     "kind": "dev",
-    "methods": {},
+    "methods": {
+      "approve(address,uint256)": {
+        "details": "The zero address indicates there is no approved address.  Throws unless `msg.sender` is the current NFT owner, or an authorized  operator of the current owner.",
+        "params": {
+          "_approved": "The new approved NFT controller",
+          "_tokenId": "The NFT to approve"
+        }
+      },
+      "balanceOf(address)": {
+        "details": "NFTs assigned to the zero address are considered invalid, and this  function throws for queries about the zero address.",
+        "params": {
+          "_owner": "An address for whom to query the balance"
+        },
+        "returns": {
+          "_0": "The number of NFTs owned by `_owner`, possibly zero"
+        }
+      },
+      "getApproved(uint256)": {
+        "details": "Throws if `_tokenId` is not a valid NFT.",
+        "params": {
+          "_tokenId": "The NFT to find the approved address for"
+        },
+        "returns": {
+          "_0": "The approved address for this NFT, or the zero address if there is none"
+        }
+      },
+      "isApprovedForAll(address,address)": {
+        "params": {
+          "_operator": "The address that acts on behalf of the owner",
+          "_owner": "The address that owns the NFTs"
+        },
+        "returns": {
+          "_0": "True if `_operator` is an approved operator for `_owner`, false otherwise"
+        }
+      },
+      "ownerOf(uint256)": {
+        "details": "NFTs assigned to zero address are considered invalid, and queries  about them do throw.",
+        "params": {
+          "_tokenId": "The identifier for an NFT"
+        },
+        "returns": {
+          "_0": "The address of the owner of the NFT"
+        }
+      },
+      "safeTransferFrom(address,address,uint256)": {
+        "details": "This works identically to the other function with an extra data parameter,  except this function just sets data to \"\".",
+        "params": {
+          "_from": "The current owner of the NFT",
+          "_to": "The new owner",
+          "_tokenId": "The NFT to transfer"
+        }
+      },
+      "safeTransferFrom(address,address,uint256,bytes)": {
+        "details": "Throws unless `msg.sender` is the current owner, an authorized  operator, or the approved address for this NFT. Throws if `_from` is  not the current owner. Throws if `_to` is the zero address. Throws if  `_tokenId` is not a valid NFT. When transfer is complete, this function  checks if `_to` is a smart contract (code size > 0). If so, it calls  `onERC721Received` on `_to` and throws if the return value is not  `bytes4(keccak256(\"onERC721Received(address,address,uint256,bytes)\"))`.",
+        "params": {
+          "_from": "The current owner of the NFT",
+          "_to": "The new owner",
+          "_tokenId": "The NFT to transfer",
+          "data": "Additional data with no specified format, sent in call to `_to`"
+        }
+      },
+      "setApprovalForAll(address,bool)": {
+        "details": "Emits the ApprovalForAll event. The contract MUST allow  multiple operators per owner.",
+        "params": {
+          "_approved": "True if the operator is approved, false to revoke approval",
+          "_operator": "Address to add to the set of authorized operators"
+        }
+      },
+      "transferFrom(address,address,uint256)": {
+        "details": "Throws unless `msg.sender` is the current owner, an authorized  operator, or the approved address for this NFT. Throws if `_from` is  not the current owner. Throws if `_to` is the zero address. Throws if  `_tokenId` is not a valid NFT.",
+        "params": {
+          "_from": "The current owner of the NFT",
+          "_to": "The new owner",
+          "_tokenId": "The NFT to transfer"
+        }
+      }
+    },
     "version": 1
   },
   "userdoc": {
     "kind": "user",
-    "methods": {},
+    "methods": {
+      "approve(address,uint256)": {
+        "notice": "Change or reaffirm the approved address for an NFT"
+      },
+      "balanceOf(address)": {
+        "notice": "Count all NFTs assigned to an owner"
+      },
+      "getApproved(uint256)": {
+        "notice": "Get the approved address for a single NFT"
+      },
+      "isApprovedForAll(address,address)": {
+        "notice": "Query if an address is an authorized operator for another address"
+      },
+      "ownerOf(uint256)": {
+        "notice": "Find the owner of an NFT"
+      },
+      "safeTransferFrom(address,address,uint256)": {
+        "notice": "Transfers the ownership of an NFT from one address to another address"
+      },
+      "safeTransferFrom(address,address,uint256,bytes)": {
+        "notice": "Transfers the ownership of an NFT from one address to another address"
+      },
+      "setApprovalForAll(address,bool)": {
+        "notice": "Enable or disable approval for a third party (\"operator\") to manage  all of `msg.sender`'s assets"
+      },
+      "transferFrom(address,address,uint256)": {
+        "notice": "Transfer ownership of an NFT -- THE CALLER IS RESPONSIBLE  TO CONFIRM THAT `_to` IS CAPABLE OF RECEIVING NFTS OR ELSE  THEY MAY BE PERMANENTLY LOST"
+      }
+    },
     "version": 1
   }
 }
