@@ -1,5 +1,12 @@
-var CryptoKitty = artifacts.require("./CryptoKitty.sol");
+const CryptoKitty = artifacts.require("CryptoKitty.sol");
 
-module.exports = function(deployer, _network, accounts) {
-  deployer.deploy(CryptoKitty, 'BenZona', 'BZ', 'www.benzona.com'); 
+module.exports = async function(deployer) {
+  await deployer.deploy(CryptoKitty, "Benzona", "BZ", "https://robohash.org");
+  const game = await CryptoKitty.deployed();
+  await Promise.all([ 
+    game.mint(),
+    game.mint(),
+    game.mint(),
+    game.mint()
+  ]);
 };
