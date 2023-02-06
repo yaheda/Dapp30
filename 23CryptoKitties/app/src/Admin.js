@@ -26,6 +26,11 @@ export default () => {
     <div>
       <div>
         <h2>Mint</h2>
+        <ContractForm 
+           drizzle={drizzle}
+           contract="CryptoKitty"
+            method="mint"
+        />
       </div>
     </div>
   );
