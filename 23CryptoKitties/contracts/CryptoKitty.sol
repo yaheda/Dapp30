@@ -37,9 +37,23 @@ contract CryptoKitty is ERC721Token {
     return _kitties;
   }
 
-  // function getAllKittiesOf(address owner) external view returns(Kitty[] memory) {
+  function getAllKittiesOf(address owner) external view returns(Kitty[] memory) {
+    uint length;
+    for(uint i = 0; i < nextId; i++) {
+      if (ownerOf(i) == owner) {
+        length++;
+      }
+    }
 
-  // }
+    Kitty[] memory _kitties = new Kitty[](length);
+    for(uint i = 0; i < nextId; i++) {
+      if (ownerOf(i) == owner) {
+        _kitties[i] = kitties[i];
+      }
+    }
+
+    return _kitties;
+  }
 
   function breed(uint kittyId1, uint kittyId2) external {
     require(kittyId1 < nextId, 'kitty1 does not exist');
