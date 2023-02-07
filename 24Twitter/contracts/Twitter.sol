@@ -24,6 +24,8 @@ contract Twitter {
   mapping(uint => Message[]) private conversations;
   uint private nextMessageId;
 
+  mapping(address => address[]) private following;
+
   function tweet(string calldata _content) external {
     tweets[nextTweetId] = Tweet(nextTweetId, msg.sender, _content, block.timestamp);
     nextTweetId++;
@@ -42,5 +44,9 @@ contract Twitter {
       _to, 
       block.timestamp));
       nextMessageId++;
+  }
+
+  function follow(address _followed) external {
+    following[msg.sender].push(_followed);
   }
 }
