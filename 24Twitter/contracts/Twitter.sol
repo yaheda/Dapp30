@@ -49,6 +49,10 @@ contract Twitter {
     uint createdAt
   );
 
+  function approve(address operator) external {
+    operators[msg.sender][operator] = true;
+  }
+
   function sendTweet(string calldata _content) external {
     _sendTweet(msg.sender, _content);
   }
