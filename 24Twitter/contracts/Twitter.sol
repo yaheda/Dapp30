@@ -32,6 +32,8 @@ contract Twitter {
 
   mapping(address => address[]) private following;
 
+  mapping(address => mapping(address => bool)) private operators;
+
   event TweetSent (
     uint id,
     address indexed author,
@@ -47,11 +49,12 @@ contract Twitter {
     uint createdAt
   );
 
-  function tweet(string calldata _content) external {
-    tweets[nextTweetId] = Tweet(nextTweetId, msg.sender, _content, block.timestamp);
-    tweetsOf[msg.sender].push(nextTweetId);
-    emit TweetSent(nextTweetId, msg.sender, _content, block.timestamp);
-    nextTweetId++;
+  function sendTweet(string calldata _content) external {
+    _sendTweet(msg.sender, _content);
+  }
+
+  function sendTweetFrom(address _from, string calldata _content) external canOperate(_from) {
+    _sendTweet(_from, _content);
   }
 
   function sendMessage(
@@ -59,19 +62,23 @@ contract Twitter {
     address _from,
     address _to) 
     external {
-    uint conversationId = uint(uint160(_from)) + uint(uint160(_to));
-    conversations[conversationId].push(Message(
-      nextMessageId, 
-      _content, 
-      _from, 
-      _to, 
-      block.timestamp));
-      emit MessageSent(nextMessageId, _content, _from, _to, block.timestamp);
-      nextMessageId++;
+    _sendMessage(_content, _from, _to);
+  }
+
+  function sendMessageFrom(
+    string calldata _content,
+    address _from,
+    address _to) 
+    external canOperate(_from) {
+    _sendMessage(_content, _from, _to);
   }
 
   function follow(address _followed) external {
-    following[msg.sender].push(_followed);
+    _follow(msg.sender, _followed);
+  }
+
+  function followFrom(address _from, address _followed) external canOperate(_from) {
+    _follow(_from, _followed);
   }
 
   function getLatestTweets(uint count) view external returns(Tweet[] memory) {
@@ -97,6 +104,39 @@ contract Twitter {
       _tweets[i] = Tweet(_tweet.id, _tweet.author, _tweet.content, _tweet.createdAt);
     }
     return _tweets;
+  }
+
+  
+  function _sendTweet(address _from, string memory _content) internal {
+    tweets[nextTweetId] = Tweet(nextTweetId, _from, _content, block.timestamp);
+    tweetsOf[_from].push(nextTweetId);
+    emit TweetSent(nextTweetId, msg.sender, _content, block.timestamp);
+    nextTweetId++;
+  }
+
+  function _sendMessage(
+    string calldata _content,
+    address _from,
+    address _to) 
+    internal {
+    uint conversationId = uint(uint160(_from)) + uint(uint160(_to));
+    conversations[conversationId].push(Message(
+      nextMessageId, 
+      _content, 
+      _from, 
+      _to, 
+      block.timestamp));
+      emit MessageSent(nextMessageId, _content, _from, _to, block.timestamp);
+      nextMessageId++;
+  }
+
+  function _follow(address _from, address _followed) internal {
+    following[_from].push(_followed);
+  }
+
+  modifier canOperate(address _from) {
+    require(operators[_from][msg.sender] == true, 'Operator not authorised');
+    _;
   }
 
 }
