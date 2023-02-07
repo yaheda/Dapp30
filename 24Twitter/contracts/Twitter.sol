@@ -53,6 +53,10 @@ contract Twitter {
     operators[msg.sender][operator] = true;
   }
 
+  function disapprove(address operator) external {
+    operators[msg.sender][operator] = false;
+  }
+
   function sendTweet(string calldata _content) external {
     _sendTweet(msg.sender, _content);
   }
