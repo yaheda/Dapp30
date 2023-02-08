@@ -42,11 +42,16 @@ contract Twitter {
   );
 
   event MessageSent(
-     uint id,
+    uint id,
     string content,
     address indexed from,
     address indexed to,
     uint createdAt
+  );
+
+  event Follow(
+    address indexed from, 
+    address indexed followed
   );
 
   function approve(address operator) external {
@@ -67,10 +72,9 @@ contract Twitter {
 
   function sendMessage(
     string calldata _content,
-    address _from,
     address _to) 
     external {
-    _sendMessage(_content, _from, _to);
+    _sendMessage(_content, msg.sender, _to);
   }
 
   function sendMessageFrom(
@@ -93,9 +97,11 @@ contract Twitter {
     require(count > 0, 'Too few tweets');
     require(count <= nextTweetId, 'Too many tweets');
     Tweet[] memory _tweets = new Tweet[](count);
+    uint nextIndex;
     for(uint i = nextTweetId - count; i < nextTweetId; i++) {
       Tweet storage _tweet = tweets[i];
-      _tweets[i] = Tweet(_tweet.id, _tweet.author, _tweet.content, _tweet.createdAt);
+      _tweets[nextIndex] = Tweet(_tweet.id, _tweet.author, _tweet.content, _tweet.createdAt);
+      nextIndex++;
     }
     return _tweets;
   }
@@ -112,6 +118,20 @@ contract Twitter {
       _tweets[i] = Tweet(_tweet.id, _tweet.author, _tweet.content, _tweet.createdAt);
     }
     return _tweets;
+  }
+
+  function getFollowings(address _user, uint count) view external returns(address[] memory) {
+    address[] storage followings = following[_user];
+
+    require(count > 0, 'Too few followings');
+    require(count <= followings.length, 'Too many followings');
+
+    address[] memory _followings = new address[](count);
+    for(uint i = followings.length - count; i < followings.length; i++) {
+      address _following = followings[i];
+      _followings[i] = _following;
+    }
+    return followings;
   }
 
   
@@ -140,6 +160,7 @@ contract Twitter {
 
   function _follow(address _from, address _followed) internal {
     following[_from].push(_followed);
+    emit Follow(_from, _followed);
   }
 
   modifier canOperate(address _from) {
