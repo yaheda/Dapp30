@@ -2,7 +2,7 @@ const Twitter = artifacts.require('Twitter.sol');
 
 const { expectRevert, expectEvent } = require('@openzeppelin/test-helpers');
 
-contract('ERC721Token', ([deployer, user1, user2, user3]) => {
+contract('ERC721Token', ([deployer, user1, user2, user3, user4]) => {
   let twitter;
 
   beforeEach(async () => {
@@ -23,6 +23,15 @@ contract('ERC721Token', ([deployer, user1, user2, user3]) => {
       await twitter.sendTweet('benzona', { from: user1 });
       await twitter.sendTweet('running gold', { from: user1 });
       let tweets = await twitter.getLatestTweets(1);
+      assert.equal(tweets.length, 1);
+      assert.equal(tweets[0].author, user1);
+      assert.equal(tweets[0].content, 'running gold');
+    })
+    it('Should return tweets of', async () => {
+      await twitter.sendTweet('hello world', { from: user1 });
+      await twitter.sendTweet('benzona', { from: user1 });
+      await twitter.sendTweet('running gold', { from: user1 });
+      let tweets = await twitter.getTweetsOf(user1, 1);
       assert.equal(tweets.length, 1);
       assert.equal(tweets[0].author, user1);
       assert.equal(tweets[0].content, 'running gold');
@@ -52,7 +61,7 @@ contract('ERC721Token', ([deployer, user1, user2, user3]) => {
   })
 
   context('Send Message', () => {
-    it.only('Should send message', async () => {
+    it('Should send message', async () => {
       const tx = await twitter.sendMessage('sharmuta', user2, { from: user1});
       await expectEvent(tx, 'MessageSent',{
         id: web3.utils.toBN(0),
@@ -60,6 +69,16 @@ contract('ERC721Token', ([deployer, user1, user2, user3]) => {
         from: user1,
         to: user2
       })
+    })
+    it.only('Should return conversation', async () => {
+      await twitter.sendMessage('sharmuta', user2, { from: user1});
+      await twitter.sendMessage('benzona', user2, { from: user1});
+      await twitter.sendMessage('zabi', user2, { from: user1});
+      let messages = await twitter.getConversation(user1, user2, 1);
+      assert.equal(messages.length, 1);
+      assert.equal(messages[0].content, 'zabi');
+      assert.equal(messages[0].from, user1);
+      assert.equal(messages[0].to, user2);
     })
   })
 
@@ -72,6 +91,14 @@ contract('ERC721Token', ([deployer, user1, user2, user3]) => {
         from: user1,
         followed: user2
       })
+    })
+    it('Should return followings', async () => {
+      await twitter.follow(user2, { from: user1 });
+      await twitter.follow(user3, { from: user1 });
+      await twitter.follow(user4, { from: user1 });
+      let followings = await twitter.getFollowings(user1, 1);
+      assert.equal(followings.length, 1);
+      assert.equal(followings[0].user, user4);
     })
   })
 

@@ -23,6 +23,12 @@ contract Twitter {
     uint createdAt;
   }
 
+  struct Following {
+    uint id;
+    address user;
+    uint createdAt;
+  }
+
   mapping(uint => Tweet) private tweets;
   uint private nextTweetId;
   mapping(address => uint[]) private tweetsOf;
@@ -30,7 +36,8 @@ contract Twitter {
   mapping(uint => Message[]) private conversations;
   uint private nextMessageId;
 
-  mapping(address => address[]) private following;
+  mapping(address => Following[]) private following;
+  uint private nextFollowingId;
 
   mapping(address => mapping(address => bool)) private operators;
 
@@ -50,8 +57,10 @@ contract Twitter {
   );
 
   event Follow(
+    uint id,
     address indexed from, 
-    address indexed followed
+    address indexed followed,
+    uint createdAt
   );
 
   function approve(address operator) external {
@@ -113,25 +122,46 @@ contract Twitter {
     require(count <= tweetIds.length, 'Too many tweets');
     
     Tweet[] memory _tweets = new Tweet[](count);
+    uint nextIndex;
     for(uint i = tweetIds.length - count; i < tweetIds.length; i++) {
       Tweet storage _tweet = tweets[tweetIds[i]];
-      _tweets[i] = Tweet(_tweet.id, _tweet.author, _tweet.content, _tweet.createdAt);
+      _tweets[nextIndex] = Tweet(_tweet.id, _tweet.author, _tweet.content, _tweet.createdAt);
+      nextIndex++;
     }
     return _tweets;
   }
 
-  function getFollowings(address _user, uint count) view external returns(address[] memory) {
-    address[] storage followings = following[_user];
+  function getFollowings(address _user, uint count) view external returns(Following[] memory) {
+    Following[] storage followings = following[_user];
 
     require(count > 0, 'Too few followings');
     require(count <= followings.length, 'Too many followings');
 
-    address[] memory _followings = new address[](count);
+    Following[] memory _followings = new Following[](count);
+    uint nextIndex;
     for(uint i = followings.length - count; i < followings.length; i++) {
-      address _following = followings[i];
-      _followings[i] = _following;
+      Following storage _following = followings[i];
+      _followings[nextIndex] = Following(_following.id, _following.user, _following.createdAt);
+      nextIndex++;
     }
-    return followings;
+    return _followings;
+  }
+
+  function getConversation(address _from, address _to, uint count) view external returns(Message[] memory) {
+    uint conversationId = uint(uint160(_from)) + uint(uint160(_to));
+    Message[] storage messages = conversations[conversationId];
+
+    require(count > 0, 'Too few messages');
+    require(count <= messages.length, 'Too many messages');
+
+    Message[] memory _messages = new Message[](count);
+    uint nextIndex;
+    for(uint i = messages.length - count; i < messages.length; i++) {
+      Message storage _message = messages[i];
+      _messages[nextIndex] = Message(_message.id, _message.content, _message.from, _message.to, _message.createdAt);
+      nextIndex++;
+    }
+    return _messages;
   }
 
   
@@ -159,8 +189,12 @@ contract Twitter {
   }
 
   function _follow(address _from, address _followed) internal {
-    following[_from].push(_followed);
-    emit Follow(_from, _followed);
+    following[_from].push(Following(
+      nextFollowingId,
+      _followed,
+      block.timestamp
+    ));
+    emit Follow(nextFollowingId, _from, _followed, block.timestamp);
   }
 
   modifier canOperate(address _from) {
