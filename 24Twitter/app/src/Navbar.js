@@ -25,6 +25,12 @@ export default ( { navigation } ) => {
           <li className={`nav-item ${isActive('/')}`}>
             <Link className="nav-link" to="/">Home</Link>
           </li>
+          <li className={`nav-item ${isActive('/my-tweets')}`}>
+            <Link className="nav-link" to="/my-tweets">My Tweets</Link>
+          </li>
+          <li className={`nav-item ${isActive('/')}`}>
+            <Link className="nav-link" to="/new-tweet">New Tweet</Link>
+          </li>
         </ul>
       </div>
     </nav>

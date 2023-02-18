@@ -8,7 +8,7 @@ export default ({ tweets }) => (
         <div className="d-flex w-100 justify-content-between">
           <h5 className="mb-1">
             {tweet.authorName} 
-            <span style={{fontSize: '0.5em'}}> ({tweet.authorAddress})</span>
+            <span style={{fontSize: '0.5em'}}> ({tweet.author})</span>
           </h5>
           <small>{toDate(tweet.createdAt)}</small>
         </div>

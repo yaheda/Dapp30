@@ -1,6 +1,7 @@
 import React from "react";
 import { drizzleReactHooks } from "@drizzle/react-plugin";
 import { newContextComponents } from "@drizzle/react-components";
+import TweetList from './TweetList'
 
 const { useDrizzle, useDrizzleState } = drizzleReactHooks;
 const { ContractData } = newContextComponents;
@@ -13,6 +14,16 @@ export default () => {
     <>
       <div>
         <h3>My Tweets</h3>
+        <ContractData
+          drizzle={drizzle}
+          drizzleState={state}
+          contract="Twitter"
+          method="getTweetsOf"
+          methodArgs={[state.accounts[0], 5]}
+          render={tweets => 
+            (<TweetList
+              tweets={tweets} />
+          )} />
       </div>
     </>
   );

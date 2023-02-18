@@ -11,6 +11,8 @@ import drizzleOptions from "./drizzleOptions";
 import LoadingContainer from './LoadingContainer.js';
 import Navbar from './Navbar.js';
 import AllTweets from './AllTweets.js';
+import NewTweet from './NewTweet';
+import MyTweets from './MyTweets';
 
 const drizzle = new Drizzle(drizzleOptions);
 const { DrizzleProvider } = drizzleReactHooks;
@@ -30,6 +32,8 @@ function App() {
               <div className="col-sm-12">
                 <Switch>
                   <Route exact path="/" component={AllTweets} />
+                  <Route path="/my-tweets" component={MyTweets} />
+                  <Route path="/new-tweet" component={NewTweet} />
                 </Switch>
               </div>
             </div>

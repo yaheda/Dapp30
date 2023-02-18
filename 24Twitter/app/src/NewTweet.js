@@ -12,6 +12,11 @@ export default () => {
     <>
       <div>
         <h3>New tweet</h3>
+        <ContractForm 
+          drizzle={drizzle}
+          contract="Twitter"
+          method="sendTweet"
+        />
       </div>
     </>
   );
