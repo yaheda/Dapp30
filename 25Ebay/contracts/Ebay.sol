@@ -7,6 +7,7 @@ contract Ebay {
   //1. Allow seller to create auction
   //2. Allow buyers to make offer for auction
   //3. Allow seller and buers to trade at end of an auction
+  //4. getters functions for auctions and offers
 
   using Address for address payable;
 
@@ -32,6 +33,8 @@ contract Ebay {
   uint private nextAuctionId = 1;
   mapping(uint => Offer) private offers;
   uint private nextOfferId = 1;
+  mapping(address => uint[]) private userAuctions;
+  mapping(address => uint[]) private userOffers;
 
   function createAuction(
     string calldata _name,
@@ -53,6 +56,7 @@ contract Ebay {
       0,
       offerIds
     );
+    userAuctions[msg.sender].push(nextAuctionId);
     nextAuctionId++;
   }
 
@@ -66,6 +70,8 @@ contract Ebay {
     auction.bestOfferId = nextOfferId;
     auction.offerIds.push(nextOfferId);
     offers[nextOfferId] = Offer(nextOfferId, payable(msg.sender), _auctionId, msg.value);
+    userOffers[msg.sender].push(nextOfferId);
+    nextOfferId++;
   }
 
   function trade(uint _auctionId) external auctionExist(_auctionId) {
@@ -83,6 +89,42 @@ contract Ebay {
     }
 
     payable(auction.seller).sendValue(bestOffer.price);
+  }
+
+  function getAuctions() view external returns(Auction[] memory) {
+    Auction[] memory _auctions = new Auction[](nextAuctionId - 1);
+    for(uint i = 1; i <= nextAuctionId; i++) {
+      _auctions[i - 1] = auctions[i];
+    }
+    return _auctions;
+  }
+
+  function getUserAuctions(address _user) view external returns(Auction[] memory) {
+    uint[] storage userAuctionIds = userAuctions[_user];
+    Auction[] memory _auctions = new Auction[](userAuctionIds.length);
+    for(uint i = 0; i < userAuctionIds.length; i++) {
+      uint auctionId = userAuctionIds[i];
+      _auctions[i] = auctions[auctionId];
+    }
+    return _auctions;
+  }
+
+  function getOffers() view external returns(Offer[] memory) {
+    Offer[] memory _offers = new Offer[](nextOfferId - 1);
+    for(uint i = 1; i <= nextOfferId; i++) {
+      _offers[i - 1] = offers[i];
+    }
+    return _offers;
+  }
+
+  function getUserOffers(address _user) view external returns(Offer[] memory) {
+    uint[] storage userOfferIds = userOffers[_user];
+    Offer[] memory _offers = new Offer[](userOfferIds.length);
+    for(uint i = 0; i < userOfferIds.length; i++) {
+      uint offerId = userOfferIds[i];
+      _offers[i] = offers[offerId];
+    }
+    return _offers;
   }
 
   modifier auctionExist(uint _auctionId) {
